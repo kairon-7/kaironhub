@@ -879,3 +879,25 @@ StarterGui:SetCore("SendNotification", {
 })
 
 updateCanvas()
+
+-- Improved updateCanvas function (replace the existing one)
+local function updateCanvas()
+    task.wait(0.05) -- Small delay to let UI elements render
+    local height = 10
+    for _, child in ipairs(scroll:GetChildren()) do
+        if child:IsA("Frame") and child.Visible then
+            local maxY = 0
+            for _, sub in ipairs(child:GetChildren()) do
+                if sub:IsA("Frame") then
+                    -- Calculate the bottom position of each sub-frame
+                    local bottomPos = sub.Position.Y.Offset + sub.Size.Y.Offset
+                    if bottomPos > maxY then
+                        maxY = bottomPos
+                    end
+                end
+            end
+            height = height + maxY + 50 -- Add extra padding at the bottom
+        end
+    end
+    scroll.CanvasSize = UDim2.new(0, 0, 0, math.max(height, scroll.Size.Y.Offset + 10))
+end
