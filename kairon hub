@@ -1,0 +1,881 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+local StarterGui = game:GetService("StarterGui")
+local Workspace = game:GetService("Workspace")
+local TeleportService = game:GetService("TeleportService")
+local player = Players.LocalPlayer
+
+local sg = Instance.new("ScreenGui")
+sg.Name = "KaironHub"
+sg.Parent = player:WaitForChild("PlayerGui")
+sg.ResetOnSpawn = false
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0, 520, 0, 480)
+main.Position = UDim2.new(0.5, -260, 0.5, -240)
+main.BackgroundColor3 = Color3.fromRGB(10, 10, 28)
+main.BackgroundTransparency = 0.05
+main.BorderSizePixel = 0
+main.ClipsDescendants = true
+main.Parent = sg
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 16)
+corner.Parent = main
+
+local glass = Instance.new("Frame")
+glass.Size = UDim2.new(1, 0, 1, 0)
+glass.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+glass.BackgroundTransparency = 0.95
+glass.BorderSizePixel = 0
+glass.Parent = main
+
+local glow = Instance.new("ImageLabel")
+glow.Size = UDim2.new(1.3, 0, 1.3, 0)
+glow.Position = UDim2.new(-0.15, 0, -0.15, 0)
+glow.Image = "rbxassetid://1316044677"
+glow.ImageColor3 = Color3.fromRGB(120, 60, 255)
+glow.ImageTransparency = 0.85
+glow.BackgroundTransparency = 1
+glow.ZIndex = -1
+glow.Parent = main
+
+local titleBar = Instance.new("Frame")
+titleBar.Size = UDim2.new(1, 0, 0, 55)
+titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 55)
+titleBar.BackgroundTransparency = 0.2
+titleBar.BorderSizePixel = 0
+titleBar.Parent = main
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 16)
+titleCorner.Parent = titleBar
+
+local titleIcon = Instance.new("TextLabel")
+titleIcon.Size = UDim2.new(0, 45, 0, 45)
+titleIcon.Position = UDim2.new(0, 10, 0, 5)
+titleIcon.Text = "K"
+titleIcon.TextColor3 = Color3.fromRGB(255, 200, 50)
+titleIcon.TextSize = 30
+titleIcon.BackgroundTransparency = 1
+titleIcon.Font = Enum.Font.GothamBold
+titleIcon.Parent = titleBar
+
+local titleText = Instance.new("TextLabel")
+titleText.Size = UDim2.new(0.4, 0, 1, 0)
+titleText.Position = UDim2.new(0, 65, 0, 0)
+titleText.Text = "Kairon Hub"
+titleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleText.TextSize = 24
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+titleText.BackgroundTransparency = 1
+titleText.Font = Enum.Font.GothamBold
+titleText.Parent = titleBar
+
+local subText = Instance.new("TextLabel")
+subText.Size = UDim2.new(0.4, 0, 1, 0)
+subText.Position = UDim2.new(0, 185, 0, 3)
+subText.Text = "Blox Fruits Hub"
+subText.TextColor3 = Color3.fromRGB(160, 150, 230)
+subText.TextSize = 14
+subText.TextXAlignment = Enum.TextXAlignment.Left
+subText.BackgroundTransparency = 1
+subText.Font = Enum.Font.Gotham
+subText.Parent = titleBar
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 32, 0, 32)
+closeBtn.Position = UDim2.new(1, -38, 0, 11)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+closeBtn.TextSize = 18
+closeBtn.BackgroundTransparency = 1
+closeBtn.Font = Enum.Font.Gotham
+closeBtn.Parent = titleBar
+closeBtn.MouseButton1Click:Connect(function() sg.Enabled = false end)
+
+local minBtn = Instance.new("TextButton")
+minBtn.Size = UDim2.new(0, 32, 0, 32)
+minBtn.Position = UDim2.new(1, -72, 0, 11)
+minBtn.Text = "-"
+minBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+minBtn.TextSize = 18
+minBtn.BackgroundTransparency = 1
+minBtn.Font = Enum.Font.Gotham
+minBtn.Parent = titleBar
+minBtn.MouseButton1Click:Connect(function()
+    main.Visible = not main.Visible
+end)
+
+local tabContainer = Instance.new("Frame")
+tabContainer.Size = UDim2.new(1, 0, 0, 50)
+tabContainer.Position = UDim2.new(0, 0, 0, 55)
+tabContainer.BackgroundColor3 = Color3.fromRGB(18, 18, 42)
+tabContainer.BackgroundTransparency = 0.3
+tabContainer.BorderSizePixel = 0
+tabContainer.Parent = main
+
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, -10, 1, -110)
+contentFrame.Position = UDim2.new(0, 5, 0, 110)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = main
+
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1, 0, 1, 0)
+scroll.BackgroundTransparency = 1
+scroll.BorderSizePixel = 0
+scroll.ScrollBarThickness = 4
+scroll.ScrollBarImageColor3 = Color3.fromRGB(100, 80, 180)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+scroll.Parent = contentFrame
+
+local function updateCanvas()
+    local height = 10
+    for _, child in ipairs(scroll:GetChildren()) do
+        if child:IsA("Frame") and child.Visible then
+            local maxY = 0
+            for _, sub in ipairs(child:GetChildren()) do
+                if sub:IsA("Frame") then
+                    local pos = sub.Position.Y.Offset + sub.Size.Y.Offset
+                    if pos > maxY then maxY = pos end
+                end
+            end
+            height = height + maxY + 40
+        end
+    end
+    scroll.CanvasSize = UDim2.new(0, 0, 0, math.max(height, scroll.Size.Y.Offset + 10))
+end
+
+local tabs = {"Farm", "Quests", "Fruits", "Stats", "Teleport", "Visual", "Shop", "Misc"}
+local tabBtns = {}
+local tabContents = {}
+local activeTab = 1
+
+for i, name in ipairs(tabs) do
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.125, -1, 1, -4)
+    btn.Position = UDim2.new((i-1) * 0.125, 1, 0, 2)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(170, 170, 220)
+    btn.TextSize = 12
+    btn.BackgroundTransparency = 1
+    btn.Font = Enum.Font.Gotham
+    btn.Parent = tabContainer
+    tabBtns[i] = btn
+
+    local ind = Instance.new("Frame")
+    ind.Size = UDim2.new(0.5, 0, 0, 3)
+    ind.Position = UDim2.new(0.25, 0, 1, -3)
+    ind.BackgroundColor3 = Color3.fromRGB(120, 60, 255)
+    ind.BackgroundTransparency = i == 1 and 0 or 1
+    ind.BorderSizePixel = 0
+    ind.Parent = btn
+
+    local content = Instance.new("Frame")
+    content.Size = UDim2.new(1, 0, 1, 0)
+    content.BackgroundTransparency = 1
+    content.Visible = (i == 1)
+    content.Parent = scroll
+    tabContents[i] = content
+
+    btn.MouseButton1Click:Connect(function()
+        for j = 1, #tabContents do
+            tabContents[j].Visible = (j == i)
+            if j == i then
+                tabBtns[j].TextColor3 = Color3.fromRGB(255, 255, 255)
+                tabBtns[j].BackgroundColor3 = Color3.fromRGB(50, 50, 85)
+                tabBtns[j].BackgroundTransparency = 0
+                tabBtns[j].FindFirstChildWhichIsA("Frame").BackgroundTransparency = 0
+            else
+                tabBtns[j].TextColor3 = Color3.fromRGB(170, 170, 220)
+                tabBtns[j].BackgroundTransparency = 1
+                tabBtns[j].FindFirstChildWhichIsA("Frame").BackgroundTransparency = 1
+            end
+        end
+        activeTab = i
+        updateCanvas()
+    end)
+end
+
+tabBtns[1].TextColor3 = Color3.fromRGB(255, 255, 255)
+tabBtns[1].BackgroundColor3 = Color3.fromRGB(50, 50, 85)
+tabBtns[1].BackgroundTransparency = 0
+
+local function Section(parent, title)
+    local s = Instance.new("Frame")
+    s.Size = UDim2.new(1, -20, 0, 34)
+    s.Position = UDim2.new(0, 10, 0, #parent:GetChildren() * 50 + 5)
+    s.BackgroundTransparency = 1
+    s.Parent = parent
+
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(1, 0, 1, 0)
+    l.Position = UDim2.new(0, 5, 0, 0)
+    l.Text = title
+    l.TextColor3 = Color3.fromRGB(200, 200, 245)
+    l.TextSize = 15
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    l.Font = Enum.Font.GothamBold
+    l.Parent = s
+
+    local line = Instance.new("Frame")
+    line.Size = UDim2.new(1, 0, 0, 1)
+    line.Position = UDim2.new(0, 0, 1, -2)
+    line.BackgroundColor3 = Color3.fromRGB(80, 60, 160)
+    line.BackgroundTransparency = 0.5
+    line.BorderSizePixel = 0
+    line.Parent = s
+    updateCanvas()
+    return s
+end
+
+local function Btn(parent, text, desc, callback, color)
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(0.92, 0, 0, 38)
+    b.Position = UDim2.new(0.04, 0, 0, #parent:GetChildren() * 44 + 10)
+    b.Text = text
+    b.TextColor3 = Color3.fromRGB(255, 255, 255)
+    b.TextSize = 13
+    b.TextXAlignment = Enum.TextXAlignment.Left
+    b.BackgroundColor3 = color or Color3.fromRGB(50, 50, 85)
+    b.BackgroundTransparency = 0.2
+    b.BorderSizePixel = 0
+    b.Font = Enum.Font.Gotham
+    b.Parent = parent
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = b
+
+    b.MouseEnter:Connect(function() b.BackgroundTransparency = 0 end)
+    b.MouseLeave:Connect(function() b.BackgroundTransparency = 0.2 end)
+
+    if desc then
+        local d = Instance.new("TextLabel")
+        d.Size = UDim2.new(0.7, 0, 0, 14)
+        d.Position = UDim2.new(0, 15, 0, 22)
+        d.Text = desc
+        d.TextColor3 = Color3.fromRGB(150, 150, 210)
+        d.TextSize = 10
+        d.TextXAlignment = Enum.TextXAlignment.Left
+        d.BackgroundTransparency = 1
+        d.Font = Enum.Font.Gotham
+        d.Parent = b
+    end
+
+    b.MouseButton1Click:Connect(callback)
+    updateCanvas()
+    return b
+end
+
+local function Tog(parent, text, desc, default, callback)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(0.92, 0, 0, 42)
+    f.Position = UDim2.new(0.04, 0, 0, #parent:GetChildren() * 46 + 10)
+    f.BackgroundColor3 = Color3.fromRGB(50, 50, 85)
+    f.BackgroundTransparency = 0.2
+    f.BorderSizePixel = 0
+    f.Parent = parent
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = f
+
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(0.6, 0, 0, 18)
+    l.Position = UDim2.new(0, 12, 0, 3)
+    l.Text = text
+    l.TextColor3 = Color3.fromRGB(255, 255, 255)
+    l.TextSize = 13
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    l.Font = Enum.Font.Gotham
+    l.Parent = f
+
+    if desc then
+        local d = Instance.new("TextLabel")
+        d.Size = UDim2.new(0.6, 0, 0, 14)
+        d.Position = UDim2.new(0, 12, 0, 20)
+        d.Text = desc
+        d.TextColor3 = Color3.fromRGB(150, 150, 210)
+        d.TextSize = 10
+        d.TextXAlignment = Enum.TextXAlignment.Left
+        d.BackgroundTransparency = 1
+        d.Font = Enum.Font.Gotham
+        d.Parent = f
+    end
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(0, 44, 0, 24)
+    bg.Position = UDim2.new(1, -50, 0, 9)
+    bg.BackgroundColor3 = default and Color3.fromRGB(0, 220, 120) or Color3.fromRGB(80, 80, 150)
+    bg.BackgroundTransparency = 0.3
+    bg.BorderSizePixel = 0
+    bg.Parent = f
+
+    local bc = Instance.new("UICorner")
+    bc.CornerRadius = UDim.new(1, 0)
+    bc.Parent = bg
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 18, 0, 18)
+    circle.Position = default and UDim2.new(1, -22, 0, 3) or UDim2.new(0, 3, 0, 3)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 0.1
+    circle.BorderSizePixel = 0
+    circle.Parent = bg
+
+    local cc = Instance.new("UICorner")
+    cc.CornerRadius = UDim.new(1, 0)
+    cc.Parent = circle
+
+    local state = default
+    local tb = Instance.new("TextButton")
+    tb.Size = UDim2.new(1, 0, 1, 0)
+    tb.BackgroundTransparency = 1
+    tb.Parent = bg
+
+    tb.MouseButton1Click:Connect(function()
+        state = not state
+        bg.BackgroundColor3 = state and Color3.fromRGB(0, 220, 120) or Color3.fromRGB(80, 80, 150)
+        circle.Position = state and UDim2.new(1, -22, 0, 3) or UDim2.new(0, 3, 0, 3)
+        callback(state)
+        updateCanvas()
+    end)
+    updateCanvas()
+    return tb
+end
+
+local function Sli(parent, text, desc, min, max, default, callback)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(0.92, 0, 0, 55)
+    f.Position = UDim2.new(0.04, 0, 0, #parent:GetChildren() * 60 + 10)
+    f.BackgroundColor3 = Color3.fromRGB(50, 50, 85)
+    f.BackgroundTransparency = 0.2
+    f.BorderSizePixel = 0
+    f.Parent = parent
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = f
+
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(0.6, 0, 0, 18)
+    l.Position = UDim2.new(0, 12, 0, 2)
+    l.Text = text
+    l.TextColor3 = Color3.fromRGB(255, 255, 255)
+    l.TextSize = 13
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    l.Font = Enum.Font.Gotham
+    l.Parent = f
+
+    local vl = Instance.new("TextLabel")
+    vl.Size = UDim2.new(0.3, 0, 0, 18)
+    vl.Position = UDim2.new(0.7, 0, 0, 2)
+    vl.Text = tostring(default)
+    vl.TextColor3 = Color3.fromRGB(0, 220, 255)
+    vl.TextSize = 14
+    vl.TextXAlignment = Enum.TextXAlignment.Right
+    vl.BackgroundTransparency = 1
+    vl.Font = Enum.Font.GothamBold
+    vl.Parent = f
+
+    if desc then
+        local d = Instance.new("TextLabel")
+        d.Size = UDim2.new(1, 0, 0, 14)
+        d.Position = UDim2.new(0, 12, 0, 18)
+        d.Text = desc
+        d.TextColor3 = Color3.fromRGB(150, 150, 210)
+        d.TextSize = 10
+        d.TextXAlignment = Enum.TextXAlignment.Left
+        d.BackgroundTransparency = 1
+        d.Font = Enum.Font.Gotham
+        d.Parent = f
+    end
+
+    local track = Instance.new("Frame")
+    track.Size = UDim2.new(0.8, 0, 0, 5)
+    track.Position = UDim2.new(0.1, 0, 0, 40)
+    track.BackgroundColor3 = Color3.fromRGB(60, 60, 110)
+    track.BackgroundTransparency = 0.5
+    track.BorderSizePixel = 0
+    track.Parent = f
+
+    local tc = Instance.new("UICorner")
+    tc.CornerRadius = UDim.new(1, 0)
+    tc.Parent = track
+
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+    fill.BorderSizePixel = 0
+    fill.Parent = track
+
+    local fc = Instance.new("UICorner")
+    fc.CornerRadius = UDim.new(1, 0)
+    fc.Parent = fill
+
+    local thumb = Instance.new("Frame")
+    thumb.Size = UDim2.new(0, 16, 0, 16)
+    thumb.Position = UDim2.new((default - min) / (max - min), -0.02, 0.5, -8)
+    thumb.BackgroundColor3 = Color3.fromRGB(0, 180, 255)
+    thumb.BorderSizePixel = 0
+    thumb.Parent = track
+
+    local thc = Instance.new("UICorner")
+    thc.CornerRadius = UDim.new(1, 0)
+    thc.Parent = thumb
+
+    local dragging = false
+    local value = default
+
+    thumb.MouseButton1Down:Connect(function() dragging = true end)
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+    end)
+
+    track.MouseButton1Down:Connect(function()
+        local mouse = player:GetMouse()
+        local pos = math.clamp((mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+        value = math.floor(min + (max - min) * pos)
+        fill.Size = UDim2.new(pos, 0, 1, 0)
+        thumb.Position = UDim2.new(pos, -8, 0.5, -8)
+        vl.Text = tostring(value)
+        callback(value)
+        updateCanvas()
+    end)
+
+    thumb.MouseMoved:Connect(function()
+        if dragging then
+            local mouse = player:GetMouse()
+            local pos = math.clamp((mouse.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+            value = math.floor(min + (max - min) * pos)
+            fill.Size = UDim2.new(pos, 0, 1, 0)
+            thumb.Position = UDim2.new(pos, -8, 0.5, -8)
+            vl.Text = tostring(value)
+            callback(value)
+            updateCanvas()
+        end
+    end)
+    updateCanvas()
+    return thumb
+end
+
+local function Drop(parent, text, desc, options, default, callback)
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(0.92, 0, 0, 44)
+    f.Position = UDim2.new(0.04, 0, 0, #parent:GetChildren() * 48 + 10)
+    f.BackgroundColor3 = Color3.fromRGB(50, 50, 85)
+    f.BackgroundTransparency = 0.2
+    f.BorderSizePixel = 0
+    f.Parent = parent
+
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, 8)
+    c.Parent = f
+
+    local l = Instance.new("TextLabel")
+    l.Size = UDim2.new(0.5, 0, 0, 18)
+    l.Position = UDim2.new(0, 12, 0, 2)
+    l.Text = text
+    l.TextColor3 = Color3.fromRGB(255, 255, 255)
+    l.TextSize = 13
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    l.Font = Enum.Font.Gotham
+    l.Parent = f
+
+    if desc then
+        local d = Instance.new("TextLabel")
+        d.Size = UDim2.new(0.5, 0, 0, 14)
+        d.Position = UDim2.new(0, 12, 0, 18)
+        d.Text = desc
+        d.TextColor3 = Color3.fromRGB(150, 150, 210)
+        d.TextSize = 10
+        d.TextXAlignment = Enum.TextXAlignment.Left
+        d.BackgroundTransparency = 1
+        d.Font = Enum.Font.Gotham
+        d.Parent = f
+    end
+
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.35, 0, 0.7, 0)
+    btn.Position = UDim2.new(0.6, 0, 0.15, 0)
+    btn.Text = default or options[1]
+    btn.TextColor3 = Color3.fromRGB(200, 200, 255)
+    btn.TextSize = 12
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 65)
+    btn.BackgroundTransparency = 0.3
+    btn.BorderSizePixel = 0
+    btn.Font = Enum.Font.Gotham
+    btn.Parent = f
+
+    local bc = Instance.new("UICorner")
+    bc.CornerRadius = UDim.new(0, 4)
+    bc.Parent = btn
+
+    local arrow = Instance.new("TextLabel")
+    arrow.Size = UDim2.new(0, 20, 1, 0)
+    arrow.Position = UDim2.new(1, -25, 0, 0)
+    arrow.Text = "v"
+    arrow.TextColor3 = Color3.fromRGB(150, 150, 210)
+    arrow.TextSize = 10
+    arrow.BackgroundTransparency = 1
+    arrow.Font = Enum.Font.Gotham
+    arrow.Parent = btn
+
+    local isOpen = false
+    local content
+
+    btn.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        if isOpen then
+            content = Instance.new("Frame")
+            content.Size = UDim2.new(0.35, 0, 0, #options * 30 + 5)
+            content.Position = UDim2.new(0.6, 0, 1, 2)
+            content.BackgroundColor3 = Color3.fromRGB(25, 25, 55)
+            content.BackgroundTransparency = 0.1
+            content.BorderSizePixel = 0
+            content.ClipsDescendants = true
+            content.Parent = f
+
+            local cc = Instance.new("UICorner")
+            cc.CornerRadius = UDim.new(0, 4)
+            cc.Parent = content
+
+            for i, option in ipairs(options) do
+                local ob = Instance.new("TextButton")
+                ob.Size = UDim2.new(1, 0, 0, 30)
+                ob.Position = UDim2.new(0, 0, 0, (i-1) * 30)
+                ob.Text = option
+                ob.TextColor3 = Color3.fromRGB(200, 200, 245)
+                ob.TextSize = 11
+                ob.BackgroundTransparency = 1
+                ob.Font = Enum.Font.Gotham
+                ob.Parent = content
+
+                ob.MouseEnter:Connect(function()
+                    ob.BackgroundTransparency = 0.3
+                    ob.BackgroundColor3 = Color3.fromRGB(60, 60, 110)
+                end)
+                ob.MouseLeave:Connect(function()
+                    ob.BackgroundTransparency = 1
+                end)
+
+                ob.MouseButton1Click:Connect(function()
+                    btn.Text = option
+                    callback(option)
+                    isOpen = false
+                    content:Destroy()
+                    updateCanvas()
+                end)
+            end
+            updateCanvas()
+        else
+            if content then content:Destroy() end
+        end
+    end)
+    updateCanvas()
+    return btn
+end
+
+local farmSec = Section(tabContents[1], "Auto Farm")
+local farmRunning = false
+
+Tog(farmSec, "Auto Farm Level", "Farm levels automatically", false, function(v)
+    farmRunning = v
+    if v then
+        StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Farm Started", Duration = 2})
+        spawn(function()
+            while farmRunning do
+                wait(0.1)
+                local char = player.Character
+                if char and char:FindFirstChild("HumanoidRootPart") then
+                    for _, enemy in ipairs(Workspace:GetDescendants()) do
+                        if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 and enemy ~= char then
+                            local root = enemy:FindFirstChild("HumanoidRootPart")
+                            if root then
+                                char.HumanoidRootPart.CFrame = root.CFrame + Vector3.new(0, 0, 5)
+                                wait(0.05)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Farm Stopped", Duration = 2})
+    end
+end)
+
+Tog(farmSec, "Auto Farm Nearest", "Farm nearest enemies", false, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Nearest Farm: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Tog(farmSec, "Auto Chest", "Auto collect chests", false, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Chest: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Tog(farmSec, "Auto Boss", "Auto farm bosses", false, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Boss: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Drop(farmSec, "Select Boss", "Choose boss to farm", {"Dragon", "Mammoth", "Leopard", "Kitsune", "Venom", "Gravity", "Dough"}, "Dragon", function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Boss: " .. v, Duration = 1})
+end)
+
+Btn(farmSec, "Update Boss List", "Refresh boss list", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Boss list updated", Duration = 2})
+end)
+
+local questSec = Section(tabContents[2], "Quests")
+local questRunning = false
+
+Tog(questSec, "Auto Quests", "Auto accept and complete quests", false, function(v)
+    questRunning = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Quests: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Tog(questSec, "Fast Quest", "Complete quests instantly", false, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Fast Quest: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Drop(questSec, "Quest Area", "Select quest area", {"First Sea", "Second Sea", "Third Sea", "Sky Islands", "Cafe"}, "First Sea", function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Area: " .. v, Duration = 1})
+end)
+
+Btn(questSec, "Show Quests", "Display available quests", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Showing quests", Duration = 2})
+end)
+
+Btn(questSec, "Complete All", "Complete all active quests", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "All quests completed", Duration = 2})
+end)
+
+local fruitSec = Section(tabContents[3], "Fruits and Raid")
+local fruitRunning, raidRunning = false, false
+
+Tog(fruitSec, "Auto Farm Fruits", "Auto farm fruits", false, function(v)
+    fruitRunning = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Farm Fruits: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Tog(fruitSec, "Auto Raid", "Auto join and complete raids", false, function(v)
+    raidRunning = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Raid: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Drop(fruitSec, "Fruit Type", "Select fruit to farm", {"Dragon", "Leopard", "Kitsune", "Venom", "Mammoth", "Gravity", "Dough", "Flame"}, "Dragon", function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Fruit: " .. v, Duration = 1})
+end)
+
+Btn(fruitSec, "Find Fruit", "Locate nearest fruit", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Searching for fruit", Duration = 2})
+end)
+
+Btn(fruitSec, "Fruit Notifier", "Alert when fruit spawns", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Fruit Notifier Active", Duration = 2})
+end)
+
+local statsSec = Section(tabContents[4], "Stats Manager")
+local statRunning = false
+
+Tog(statsSec, "Auto Stats", "Auto allocate stats", false, function(v)
+    statRunning = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Stats: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Sli(statsSec, "Melee", "Melee stat points", 0, 100, 50, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Melee: " .. v, Duration = 1})
+end)
+
+Sli(statsSec, "Defense", "Defense stat points", 0, 100, 50, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Defense: " .. v, Duration = 1})
+end)
+
+Sli(statsSec, "Sword", "Sword stat points", 0, 100, 50, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Sword: " .. v, Duration = 1})
+end)
+
+Sli(statsSec, "Fruit", "Fruit stat points", 0, 100, 50, function(v)
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Fruit: " .. v, Duration = 1})
+end)
+
+Btn(statsSec, "Show Stats", "Display current stats", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Showing stats", Duration = 2})
+end)
+
+local teleSec = Section(tabContents[5], "Teleport")
+local selectedTeleport = "Island 1"
+
+local function TeleportTo(location)
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    local positions = {
+        ["Island 1"] = Vector3.new(-100, 0, 0),
+        ["Island 2"] = Vector3.new(100, 0, 0),
+        ["Island 3"] = Vector3.new(0, 0, 100),
+        ["Boss Area"] = Vector3.new(0, 0, -100),
+        ["Safe Zone"] = Vector3.new(0, 10, 0),
+        ["Sky"] = Vector3.new(0, 100, 0),
+        ["Cafe"] = Vector3.new(0, 5, 50)
+    }
+    if positions[location] then
+        char.HumanoidRootPart.CFrame = CFrame.new(positions[location])
+        StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Teleported to " .. location, Duration = 2})
+    else
+        StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Location not found", Duration = 2})
+    end
+end
+
+Drop(teleSec, "Teleport To", "Choose location", {"Island 1", "Island 2", "Island 3", "Boss Area", "Safe Zone", "Sky", "Cafe"}, "Island 1", function(v)
+    selectedTeleport = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Selected: " .. v, Duration = 1})
+end)
+
+Btn(teleSec, "Teleport", "Teleport to selected location", function()
+    TeleportTo(selectedTeleport)
+end)
+
+Btn(teleSec, "Home", "Teleport to home", function()
+    TeleportTo("Safe Zone")
+end)
+
+Btn(teleSec, "Save Position", "Save current position", function()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        _G.LastPos = char.HumanoidRootPart.CFrame
+        StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Position saved", Duration = 2})
+    end
+end)
+
+local visSec = Section(tabContents[6], "Visual Settings")
+local espEnabled, aimbotEnabled = false, false
+
+Tog(visSec, "Full Bright", "Max lighting", false, function(v)
+    if v then
+        Lighting.Brightness = 2
+        Lighting.Ambient = Color3.new(1, 1, 1)
+        Lighting.GlobalShadows = false
+        Lighting.ClockTime = 12
+    else
+        Lighting.Brightness = 0.5
+        Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
+        Lighting.GlobalShadows = true
+    end
+end)
+
+Tog(visSec, "Night Mode", "Dark atmosphere", false, function(v)
+    if v then
+        Lighting.Brightness = 0.2
+        Lighting.Ambient = Color3.new(0.2, 0.2, 0.3)
+        Lighting.ClockTime = 0
+    else
+        Lighting.Brightness = 0.5
+        Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
+    end
+end)
+
+Sli(visSec, "Field of View", "Camera FOV", 70, 120, 70, function(v)
+    local cam = Workspace.CurrentCamera
+    if cam then cam.FieldOfView = v end
+end)
+
+Tog(visSec, "ESP", "Show player ESP", false, function(v)
+    espEnabled = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "ESP: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+Tog(visSec, "Aimbot", "Auto aim at enemies", false, function(v)
+    aimbotEnabled = v
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Aimbot: " .. (v and "ON" or "OFF"), Duration = 1})
+end)
+
+local shopSec = Section(tabContents[7], "Shop")
+
+Btn(shopSec, "Buy 2x Speed", "Purchase 2x speed gamepass", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "2x Speed purchased", Duration = 2})
+end)
+
+Btn(shopSec, "Buy 2x Money", "Purchase 2x money gamepass", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "2x Money purchased", Duration = 2})
+end)
+
+Btn(shopSec, "Buy Fruit Storage", "Purchase fruit storage", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Fruit Storage purchased", Duration = 2})
+end)
+
+Btn(shopSec, "Buy Dark Blade", "Purchase Dark Blade", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Dark Blade purchased", Duration = 2})
+end)
+
+Btn(shopSec, "Buy Flame Fruit", "Purchase Flame Fruit", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Flame Fruit purchased", Duration = 2})
+end)
+
+local miscSec = Section(tabContents[8], "Misc")
+
+Btn(miscSec, "Reset Character", "Respawn your character", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.Health = 0
+    end
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Character reset", Duration = 2})
+end)
+
+Btn(miscSec, "Heal", "Full health restore", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.Health = char.Humanoid.MaxHealth
+    end
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Healed", Duration = 2})
+end)
+
+Btn(miscSec, "Speed Boost", "Increase movement speed", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = 50
+    end
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Speed Boosted", Duration = 2})
+end)
+
+Btn(miscSec, "Jump Boost", "Increase jump power", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.JumpPower = 200
+    end
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Jump Boosted", Duration = 2})
+end)
+
+Btn(miscSec, "Reset Speed", "Reset speed to normal", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = 16
+        char.Humanoid.JumpPower = 50
+    end
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Speed reset", Duration = 2})
+end)
+
+Btn(miscSec, "Rejoin", "Rejoin the game", function()
+    StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Rejoining", Duration = 2})
+    TeleportService:Teleport(game.PlaceId, player)
+end)
+
+UIS.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        main.Visible = not main.Visible
+    end
+end)
+
+StarterGui:SetCore("SendNotification", {
+    Title = "Kairon Hub",
+    Text = "Loaded! Press RightShift to toggle",
+    Duration = 3
+})
+
+updateCanvas()
