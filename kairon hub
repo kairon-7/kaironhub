@@ -1,8 +1,3 @@
--- ============================================
--- KAIRON HUB - ULTIMATE WORKING EDITION
--- Blox Fruits | All Features Working
--- ============================================
-
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
@@ -10,12 +5,8 @@ local StarterGui = game:GetService("StarterGui")
 local Workspace = game:GetService("Workspace")
 local TeleportService = game:GetService("TeleportService")
 local RunService = game:GetService("RunService")
-local VirtualUser = game:GetService("VirtualUser")
 local player = Players.LocalPlayer
 
--- ============================================
--- SILENCE CONSOLE ERRORS
--- ============================================
 local oldWarn = warn
 local oldPrint = print
 warn = function() end
@@ -25,9 +16,6 @@ local function Log(msg)
     oldPrint("[Kairon] " .. msg)
 end
 
--- ============================================
--- CREATE GUI
--- ============================================
 local sg = Instance.new("ScreenGui")
 sg.Name = "KaironHub"
 sg.Parent = player:WaitForChild("PlayerGui")
@@ -53,9 +41,6 @@ glass.BackgroundTransparency = 0.95
 glass.BorderSizePixel = 0
 glass.Parent = main
 
--- ============================================
--- TITLE BAR
--- ============================================
 local titleBar = Instance.new("Frame")
 titleBar.Size = UDim2.new(1, 0, 0, 50)
 titleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 55)
@@ -109,9 +94,6 @@ minBtn.MouseButton1Click:Connect(function()
     main.Visible = not main.Visible
 end)
 
--- ============================================
--- TABS
--- ============================================
 local tabContainer = Instance.new("Frame")
 tabContainer.Size = UDim2.new(1, 0, 0, 40)
 tabContainer.Position = UDim2.new(0, 0, 0, 50)
@@ -188,9 +170,6 @@ for i, name in ipairs(tabs) do
     end)
 end
 
--- ============================================
--- UI HELPERS
--- ============================================
 local function Section(parent, title)
     local s = Instance.new("Frame")
     s.Size = UDim2.new(1, -20, 0, 30)
@@ -569,9 +548,6 @@ local function Drop(parent, text, desc, options, default, callback)
     return btn
 end
 
--- ============================================
--- AUTO FARM SYSTEM - WORKING
--- ============================================
 local farmRunning = false
 local farmConnection = nil
 
@@ -599,13 +575,10 @@ local function StartFarm()
     end)
 end
 
--- ============================================
--- TELEPORT - BLOX FRUITS LOCATIONS
--- ============================================
 local function TeleportTo(location)
     local char = player.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    
+
     local positions = {
         ["Jungle"] = Vector3.new(-1334, 4, 1180),
         ["Pirate Village"] = Vector3.new(-820, 4, 1040),
@@ -628,7 +601,7 @@ local function TeleportTo(location)
         ["Mammoth Boss"] = Vector3.new(-700, 4, -2200),
         ["Leopard Boss"] = Vector3.new(-900, 4, -2500),
     }
-    
+
     if positions[location] then
         char.HumanoidRootPart.CFrame = CFrame.new(positions[location])
         StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Teleported to " .. location, Duration = 2})
@@ -637,9 +610,6 @@ local function TeleportTo(location)
     end
 end
 
--- ============================================
--- FARM TAB
--- ============================================
 local farmSec = Section(tabContents[1], "Auto Farm")
 
 Tog(farmSec, "Auto Farm", "Farm enemies automatically", false, function(v)
@@ -660,7 +630,9 @@ Tog(farmSec, "Auto Chest", "Auto collect chests", false, function(v)
     StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Auto Chest: " .. (v and "ON" or "OFF"), Duration = 1})
 end)
 
+local selectedBoss = "Dragon Boss"
 Drop(farmSec, "Select Boss", "Choose boss to farm", {"Dragon Boss", "Mammoth Boss", "Leopard Boss", "Kitsune Boss", "Venom Boss"}, "Dragon Boss", function(v)
+    selectedBoss = v
     StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Boss: " .. v, Duration = 1})
 end)
 
@@ -668,9 +640,6 @@ Btn(farmSec, "Teleport to Boss", "Go to selected boss location", function()
     TeleportTo(selectedBoss)
 end)
 
--- ============================================
--- COMBAT TAB
--- ============================================
 local combatSec = Section(tabContents[2], "Combat")
 
 local godMode = false
@@ -694,9 +663,6 @@ Sli(combatSec, "Damage", "Damage multiplier", 1, 10, 1, function(v)
     StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Damage: " .. v .. "x", Duration = 1})
 end)
 
--- ============================================
--- PLAYER TAB
--- ============================================
 local playerSec = Section(tabContents[3], "Player")
 
 Sli(playerSec, "Speed", "Movement speed", 16, 100, 16, function(v)
@@ -719,14 +685,14 @@ Tog(playerSec, "Fly", "WASD + Space to fly", false, function(v)
     local h = char:FindFirstChild("Humanoid")
     local root = char:FindFirstChild("HumanoidRootPart")
     if not h or not root then return end
-    
+
     if v then
         h.PlatformStand = true
         local vel = Instance.new("BodyVelocity")
         vel.MaxForce = Vector3.new(4000, 4000, 4000)
         vel.Velocity = Vector3.new(0, 0, 0)
         vel.Parent = root
-        
+
         RunService.RenderStepped:Connect(function()
             if not v then
                 vel:Destroy()
@@ -755,9 +721,6 @@ Tog(playerSec, "Noclip", "Walk through walls", false, function(v)
     end
 end)
 
--- ============================================
--- WORLD TAB
--- ============================================
 local worldSec = Section(tabContents[4], "World")
 
 Tog(worldSec, "Full Bright", "Max lighting", false, function(v)
@@ -788,9 +751,6 @@ Sli(worldSec, "FOV", "Field of view", 70, 120, 70, function(v)
     if cam then cam.FieldOfView = v end
 end)
 
--- ============================================
--- TELEPORT TAB
--- ============================================
 local teleSec = Section(tabContents[5], "Teleport")
 local selectedTeleport = "Jungle"
 
@@ -819,9 +779,6 @@ Btn(teleSec, "Save Position", "Save current location", function()
     end
 end)
 
--- ============================================
--- MISC TAB
--- ============================================
 local miscSec = Section(tabContents[6], "Misc")
 
 Btn(miscSec, "Heal", "Full health restore", function()
@@ -862,9 +819,6 @@ Btn(miscSec, "Reset Speed", "Reset speed to normal", function()
     StarterGui:SetCore("SendNotification", {Title = "Kairon Hub", Text = "Speed reset", Duration = 2})
 end)
 
--- ============================================
--- KEYBIND
--- ============================================
 UIS.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
