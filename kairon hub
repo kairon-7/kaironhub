@@ -142,7 +142,7 @@ local function updateCanvas()
                     if pos > maxY then maxY = pos end
                 end
             end
-            height = height + maxY + 40
+            height = height + maxY + 50
         end
     end
     scroll.CanvasSize = UDim2.new(0, 0, 0, math.max(height, scroll.Size.Y.Offset + 10))
