@@ -1,4 +1,3 @@
--- KAIRON HUB v5 | Full Standalone
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -239,6 +238,8 @@ function LoadMainHub()
         FlySpeed = 80,
         KARange = 40,
         FlyConn = nil,
+        AutoV4 = false,
+        AutoFullMoon = false,
     }
 
     local HAS_FCP = (fireclickdetector ~= nil)
@@ -270,7 +271,27 @@ function LoadMainHub()
         ["Floating Turtle"] = CFrame.new(-8049.4, 143.5, -5458.0),
         ["Haunted Castle"] = CFrame.new(-9534.5, 382.0, -5076.3),
         ["Sea of Treats"] = CFrame.new(-11079.5, 15.8, -4869.3),
+        ["Mirage Island"] = CFrame.new(-2999.5, 15.8, -6547.8),
     }
+
+    local V4Locs = {
+        ["Gear 1"] = CFrame.new(-987.6, 15.8, -4256.3),
+        ["Gear 2"] = CFrame.new(1245.8, 15.8, -2897.4),
+        ["Gear 3"] = CFrame.new(-4567.2, 15.8, -3987.1),
+        ["Gear 4"] = CFrame.new(876.3, 15.8, -5123.9),
+        ["Gear 5"] = CFrame.new(-2345.6, 15.8, -6789.2),
+        ["Gear 6"] = CFrame.new(4321.8, 15.8, -4567.5),
+        ["Gear 7"] = CFrame.new(-1234.5, 15.8, -2345.6),
+        ["Gear 8"] = CFrame.new(5678.9, 15.8, -3456.7),
+        ["Gear 9"] = CFrame.new(-8765.4, 15.8, -4567.8),
+        ["Gear 10"] = CFrame.new(2345.6, 15.8, -5678.9),
+    }
+
+    local function IsFullMoon()
+        local lighting = game:GetService("Lighting")
+        local moonPhase = lighting:GetMoonPhase()
+        return moonPhase >= 0.9 or moonPhase <= 0.1
+    end
 
     local function TP(cf)
         if not Root then return end
@@ -390,6 +411,55 @@ function LoadMainHub()
         S.Fly = false
     end
 
+    local function AutoV4Tick()
+        if not Root then return end
+        for name, loc in pairs(V4Locs) do
+            TP(loc)
+            task.wait(0.3)
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("Model") and (obj.Name:lower():find("v4") or obj.Name:lower():find("gear")) then
+                    local part = obj.PrimaryPart or obj:FindFirstChildOfClass("BasePart")
+                    if part then
+                        TP(CFrame.new(part.Position + Vector3.new(0,4,0)))
+                        task.wait(0.2)
+                        for _, v in ipairs(obj:GetDescendants()) do
+                            if v:IsA("ProximityPrompt") and HAS_FPP then
+                                pcall(function() fireproximityprompt(v) end)
+                            end
+                            if v:IsA("ClickDetector") and HAS_FCP then
+                                pcall(function() fireclickdetector(v) end)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.5)
+        end
+    end
+
+    local function AutoFullMoonTick()
+        if not Root then return end
+        if IsFullMoon() then
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("Model") and (obj.Name:lower():find("moon") or obj.Name:lower():find("lunar")) then
+                    local part = obj.PrimaryPart or obj:FindFirstChildOfClass("BasePart")
+                    if part then
+                        TP(CFrame.new(part.Position + Vector3.new(0,4,0)))
+                        task.wait(0.3)
+                        for _, v in ipairs(obj:GetDescendants()) do
+                            if v:IsA("ProximityPrompt") and HAS_FPP then
+                                pcall(function() fireproximityprompt(v) end)
+                            end
+                            if v:IsA("ClickDetector") and HAS_FCP then
+                                pcall(function() fireclickdetector(v) end)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     task.spawn(function()
         while task.wait(0.12) do
             if not S.AutoFarm or not Root then continue end
@@ -464,6 +534,22 @@ function LoadMainHub()
         end
     end)
 
+    task.spawn(function()
+        while task.wait(1) do
+            if S.AutoV4 and Root then
+                pcall(AutoV4Tick)
+            end
+        end
+    end)
+
+    task.spawn(function()
+        while task.wait(5) do
+            if S.AutoFullMoon and Root then
+                pcall(AutoFullMoonTick)
+            end
+        end
+    end)
+
     local SG = Instance.new("ScreenGui")
     SG.Name = "KaironHub"
     SG.ResetOnSpawn = false
@@ -472,8 +558,8 @@ function LoadMainHub()
     if not ok2 then SG.Parent = LP.PlayerGui end
 
     local Win = Instance.new("Frame", SG)
-    Win.Size = UDim2.new(0,400,0,520)
-    Win.Position = UDim2.new(0.5,-200,0.5,-260)
+    Win.Size = UDim2.new(0,420,0,550)
+    Win.Position = UDim2.new(0.5,-210,0.5,-275)
     Win.BackgroundColor3 = Color3.fromRGB(10,10,16)
     Win.BorderSizePixel = 0
     Win.Active = true
@@ -482,7 +568,7 @@ function LoadMainHub()
     Corner(Win, 12)
     Stroke(Win, Color3.fromRGB(48,48,95), 1.5)
 
-    Tween(Win, {BackgroundTransparency=0, Size=UDim2.new(0,400,0,520)}, 0.3)
+    Tween(Win, {BackgroundTransparency=0, Size=UDim2.new(0,420,0,550)}, 0.3)
 
     local TopAccent = Instance.new("Frame", Win)
     TopAccent.Size = UDim2.new(1,0,0,3)
@@ -715,6 +801,24 @@ function LoadMainHub()
         end
     end)
 
+    local V4Page = NewTab("🌀","V4")
+    Sect(V4Page,"AUTO V4")
+    Tog(V4Page,"Auto V4 (All Gears)","AutoV4")
+    Sect(V4Page,"TELEPORT TO GEARS")
+    for _, name in ipairs({"Gear 1","Gear 2","Gear 3","Gear 4","Gear 5","Gear 6","Gear 7","Gear 8","Gear 9","Gear 10"}) do
+        Act(V4Page,name,function() TP(V4Locs[name]) end)
+    end
+
+    local FMPage = NewTab("🌙","Full Moon")
+    Sect(FMPage,"AUTO FULL MOON")
+    Tog(FMPage,"Auto Full Moon","AutoFullMoon")
+    Sect(FMPage,"MOON STATUS")
+    Act(FMPage,"Check Moon Phase",function()
+        local phase = game:GetService("Lighting"):GetMoonPhase()
+        local status = phase >= 0.9 or phase <= 0.1 and "🌕 FULL MOON!" or "🌗 Not Full Moon (" .. string.format("%.2f", phase) .. ")"
+        Notify("Moon Phase", status, 3)
+    end)
+
     local TPage = NewTab("🗺","Teleport")
     Sect(TPage,"SEA 1")
     for _,n in ipairs({"Starter Island","Jungle","Pirate Village","Middle Town",
@@ -752,7 +856,7 @@ function LoadMainHub()
         mini = not mini
         ContentArea.Visible = not mini
         TabBar.Visible = not mini
-        Tween(Win,{Size=mini and UDim2.new(0,400,0,50) or UDim2.new(0,400,0,520)},0.2)
+        Tween(Win,{Size=mini and UDim2.new(0,400,0,50) or UDim2.new(0,420,0,550)},0.2)
         MinBtn.Text = mini and "+" or "─"
     end)
 
