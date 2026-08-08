@@ -1,7 +1,4 @@
 -- KAIRON HUB v5 | Full Standalone
--- All features built-in, no external load required
--- Key: kairon-script | Toggle: RightAlt
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -36,7 +33,6 @@ local function Tween(obj, props, t)
     TweenService:Create(obj, TweenInfo.new(t or 0.18, Enum.EasingStyle.Quad), props):Play()
 end
 
--- Clear old GUIs
 pcall(function()
     local cg = game:GetService("CoreGui")
     for _, v in ipairs(cg:GetChildren()) do
@@ -46,7 +42,6 @@ pcall(function()
     end
 end)
 
--- Key System GUI
 local KeySG = Instance.new("ScreenGui")
 KeySG.Name = "KaironKey"
 KeySG.ResetOnSpawn = false
@@ -395,7 +390,6 @@ function LoadMainHub()
         S.Fly = false
     end
 
-    -- Auto loops
     task.spawn(function()
         while task.wait(0.12) do
             if not S.AutoFarm or not Root then continue end
@@ -470,7 +464,6 @@ function LoadMainHub()
         end
     end)
 
-    -- Main Hub GUI
     local SG = Instance.new("ScreenGui")
     SG.Name = "KaironHub"
     SG.ResetOnSpawn = false
@@ -695,7 +688,6 @@ function LoadMainHub()
         end)
     end
 
-    -- Combat Tab
     local CPage = NewTab("⚔","Combat")
     Sect(CPage,"TOGGLES")
     Tog(CPage,"Auto Farm","AutoFarm")
@@ -723,7 +715,6 @@ function LoadMainHub()
         end
     end)
 
-    -- Teleport Tab
     local TPage = NewTab("🗺","Teleport")
     Sect(TPage,"SEA 1")
     for _,n in ipairs({"Starter Island","Jungle","Pirate Village","Middle Town",
@@ -742,7 +733,6 @@ function LoadMainHub()
         Act(TPage,n,function() TP(Locs[n]) end)
     end
 
-    -- Player Tab
     local PPage = NewTab("👤","Player")
     Sect(PPage,"MOVEMENT")
     Tog(PPage,"Fly (WASD + Space / Ctrl)","Fly",StartFly,StopFly)
